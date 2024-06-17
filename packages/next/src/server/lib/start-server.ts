@@ -42,6 +42,8 @@ export interface StartServerOptions {
   customServer?: boolean
   minimalMode?: boolean
   keepAliveTimeout?: number
+  // This is the nextConfig object
+  config?: object
   // this is dev-server only
   selfSignedCertificate?: SelfSignedCertificate
 }
@@ -95,6 +97,7 @@ export async function startServer(
     allowRetry,
     keepAliveTimeout,
     selfSignedCertificate,
+    config = {},
   } = serverOptions
   let { port } = serverOptions
 
@@ -294,8 +297,8 @@ export async function startServer(
           // prefetching patterns to avoid waterfalls. We ignore loggining these.
           // We should've already errored in anyway unhandledRejection.
         })
-        process.on('uncaughtException', exception)
-        process.on('unhandledRejection', exception)
+        process.on('uncaughtException', config.customException ? config.customException : exception);
+        process.on('unhandledRejection', config.customException ? config.customException : exception);
 
         const initResult = await getRequestHandlers({
           dir,
